@@ -1,12 +1,12 @@
-import react from "react";
-import "./styles/shared/index.css"
+import "./styles/shared/index.css";
+import AppRoutes from "./AppRoutes";
 
 const App = () => {
   return (
     <div className="App">
-      <h1>Beginning of project</h1>
+      <AppRoutes />
     </div>
   );
-}
+};
 
 export default App;
