@@ -1,3 +1,9 @@
+## Deployment
+
+This application is deployed via. vercel. The master's branch is automatically put into the production deployment, whenever a change has been detected.
+
+Under "About" a live demo link can be clicked on. 
+
 ## Available Scripts
 
 In the project directory, you can run:
