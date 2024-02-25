@@ -1,7 +1,11 @@
+import { useEffect } from "react";
+
+document.title = "Home";
+
 const HomeView = () => {
   return (
     <>
-      <h1>Hello world</h1>
+      <h1>TODO</h1>
     </>
   );
 };

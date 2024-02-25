@@ -1,0 +1,67 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 10%;
+  width: 100%;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+  cursor: pointer;
+}
+
+.nav__links {
+  list-style: none;
+}
+
+.nav__links li {
+  display: inline-block;
+  padding: 0px 20px;
+}
+
+.nav__links li a {
+  transition: all 0.3s ease 0s;
+}
+
+.nav__links li a:hover {
+  color: lightslategray;
+}
+
+button {
+  padding: 10px 25px;
+  background-color: rgba(0, 136, 169, 1);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease 0s;
+}
+
+button:hover {
+  background-color: lightslategray;
+  color: white;
+}
+
+.navbar__element_styles > li,
+a,
+button {
+  font-weight: 500;
+  font-size: 16px;
+  color: black;
+  text-decoration: none;
+}
+
+.cart__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart {
+  color: white;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  background-color: transparent;
+}
