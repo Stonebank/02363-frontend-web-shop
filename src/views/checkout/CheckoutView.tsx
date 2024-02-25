@@ -32,6 +32,10 @@ interface BasketProduct {
 }
 
 const CheckoutView = () => {
+  // initialize a state that stores the total price of the products in the basket
+
+  const [total, setTotal] = useState<number>(0.0);
+
   // Initialize a state of type "Product" as an array with an empty state as the initial value
 
   const [basket, setBasket] = useState<BasketProduct[]>([]);
@@ -83,6 +87,11 @@ const CheckoutView = () => {
     const updatedBasket = basket.filter((item) => item.id !== id);
     setBasket(updatedBasket);
   };
+
+  useEffect(() => {
+    const total = basket.reduce((acc, item) => acc + item.total, 0);
+    setTotal(total);
+  }, [basket]);
 
   return (
     <div className="cart_container">
@@ -163,6 +172,9 @@ const CheckoutView = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+              <div className="cart_total">
+                <div>I alt: {total} kr</div>
               </div>
             </div>
           </li>

@@ -129,3 +129,11 @@ input[type="checkbox"] {
   justify-content: space-between;
   align-items: center;
 }
+
+.cart_total {
+  font-size: 24px;
+  margin-top: 5rem;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
