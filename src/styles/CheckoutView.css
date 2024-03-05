@@ -137,3 +137,8 @@ input[type="checkbox"] {
   justify-content: end;
   align-items: center;
 }
+
+.rebateNudge {
+  color: darkred;
+  margin-top: 10px;
+}
