@@ -89,9 +89,33 @@ const CheckoutView = () => {
   };
 
   useEffect(() => {
-    const total = basket.reduce((acc, item) => acc + item.total, 0);
+    let total = basket.reduce((acc, item) => {
+      let itemTotal = item.product.price * item.quantity;
+
+      // Apply rebate if quantity exceeds the rebate threshold
+      if (item.quantity >= item.product.rebateQuantity) {
+        itemTotal *= (1 - item.product.rebatePercent / 100);
+      }
+      return acc + itemTotal;
+    }, 0);
+
+    // Apply 10% discount for orders over 300 DKK
+    if (total > 300) {
+      total *= 0.9;
+    }
     setTotal(total);
   }, [basket]);
+
+  const renderQuantityNudge = (product: Product) => {
+    if (product.rebateQuantity > 1) {
+      return (
+          <div className="rebateNudge">
+            {`Get a ${product.rebatePercent}% discount by ordering ${product.rebateQuantity} or more!`}
+          </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="cart_container">
@@ -133,10 +157,11 @@ const CheckoutView = () => {
                     >
                       <div className="item__details">
                         <div className="product_name">{item.product.name}</div>
+                        {renderQuantityNudge(item.product)}
                       </div>
                       <input
                         type="number"
-                        placeholder="Vælg antal"
+                        placeholder="Select quantity"
                         value={item.quantity}
                         onChange={(e) =>
                           handleQuantityChange(
@@ -158,7 +183,7 @@ const CheckoutView = () => {
                             handleGiftWrapChange(item.id, e.target.checked)
                           }
                         />
-                        <label> Indpakning</label>
+                        <label> Packaging</label>
                       </div>
                       <div className="item__price">
                         {item.product.price * item.quantity} kr
@@ -167,14 +192,14 @@ const CheckoutView = () => {
                         onClick={() => handleRemove(item.id)}
                         className="remove_button"
                       >
-                        Fjern
+                        Remove
                       </button>
                     </div>
                   ))}
                 </div>
               </div>
               <div className="cart_total">
-                <div>I alt: {total} kr</div>
+                <div>Total: {total} kr</div>
               </div>
             </div>
           </li>
