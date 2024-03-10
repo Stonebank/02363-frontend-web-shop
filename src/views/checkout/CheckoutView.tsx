@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import productsData from "../../data/static/products.json";
 import "../../styles/CheckoutView.css";
+import AddressForm from "../AddressForm/AddressFrom";
+
+
 
 /*
  *
@@ -117,10 +120,17 @@ const CheckoutView = () => {
     return null;
   };
 
+  // The handleAddressForm function will open the address form in a new tab
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const handleAddressForm = () => {
+    window.location.href = '/addressform';
+  };
+
   return (
     <div className="cart_container">
       <h1 className="cart_header">Shopping cart</h1>
       <div className="cart_items">
+
         <ul role="list" className="cart_list">
           <li
             className="cart_list_item header_row"
@@ -201,10 +211,28 @@ const CheckoutView = () => {
               <div className="cart_total">
                 <div>Total: {total} kr</div>
               </div>
+              <br></br>
             </div>
           </li>
         </ul>
       </div>
+
+      <br></br>
+      <button
+        onClick={handleAddressForm}
+        className="payment_button">
+        Go to payment
+      </button>
+
+      {showAddressForm && (
+        <div
+          className="address_form_modal">
+          <AddressForm />
+
+        </div>
+
+      )}
+
     </div>
   );
 };
