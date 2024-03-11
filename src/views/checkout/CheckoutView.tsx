@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import productsData from "../../data/static/products.json";
 import "../../styles/CheckoutView.css";
-import AddressForm from "../AddressForm/AddressFrom";
+import AddressForm from "../../views/AddressForm/AddressForm";
 
 
 

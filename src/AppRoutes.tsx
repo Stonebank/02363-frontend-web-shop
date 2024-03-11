@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomeView from "./views/HomeView";
 import NotFoundView from "./views/errors/NotFoundView";
 import Checkout from "./views/checkout/CheckoutView";
-import AddressForm from "./views/AddressForm/AddressFrom";
+import AddressForm from "./views/AddressForm/AddressForm";
 import Payment from "./views/Payment/Payment";
 import "./styles/shared/App.css";
 import Navbar from "./components/navbar/Navbar";

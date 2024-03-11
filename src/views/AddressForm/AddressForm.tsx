@@ -1,36 +1,25 @@
         import React, { useState, useEffect } from 'react';
-
-        interface Country {
-            alpha2Code: string;
-            name: string;
-            code: string;
-        }
-      
+        import { validatePhoneNumber } from './FormValidation';
+        import{ validateEmail } from './FormValidation';
+        import{validateVAT} from "./FormValidation";
+        import{isValidZip} from "./FormValidation";
         
-        interface Address {
-          country: string;
-          zip: string;
-          city: string;
-          address1: string;
-          address2: string;
-          name: string;
-          phone: string;
-          email: string;
-          company: string;
-          vat: string;
-          countryCode: string;
-        }
+        import {Address} from "./FormInterface";
+        import {Country} from "./FormInterface";
         
-        interface AddressFormState {
-          delivery: Address;
-          billing: Address;
-          isBillingDifferent: boolean;
-        }
-
         
-
+        // define the AddressForm  functional component 
         const AddressForm: React.FC = () => {
-        
+            
+            const [countries, setCountries] = useState<Country[]>([
+                { alpha2Code: 'DK', name: 'Denmark', code: '+45' },
+                { alpha2Code: 'SE', name: 'Sweden', code: '+46' },
+                { alpha2Code: 'NO', name: 'Norway', code: '+47' },
+            ]);
+            const [isBillingDifferent, setIsBillingDifferent] = useState(false);
+            const [error, setError] = useState<string | null>(null);
+            const [countryCode, setFullPhone] = useState('');
+            
         const [delivery, setDelivery] = useState<Address>({
           country: 'Denmark',
           zip: '',
@@ -45,7 +34,6 @@
           countryCode: '',
         });
         
-        
         const [billing, setBilling] = useState<Address>({
           country: 'Denmark',
           zip: '',
@@ -59,71 +47,65 @@
           vat: '',
           countryCode: '',
         });
-          
-        const [isBillingDifferent, setIsBillingDifferent] = useState(false);
-        const [error, setError] = useState<string | null>(null);
-        const [countries, setCountries] = useState<Country[]>([
-                { alpha2Code: 'DK', name: 'Denmark', code: '+45' },
-                { alpha2Code: 'SE', name: 'Sweden', code: '+46' },
-                { alpha2Code: 'NO', name: 'Norway', code: '+47' },
-            ]);
-       
-        const [fullPhone, setFullPhone] = useState('');
-
+        
             useEffect(() => {
                 const selectedCountry = countries.find(country => country.name === delivery.country);
                 if (selectedCountry) {
-                    setFullPhone(`${selectedCountry.code} ${delivery.phone}`);
+                    setFullPhone(`${selectedCountry.code}`);
                 }
                 
             }, [delivery.country, delivery.phone, countries]);
 
-            async function fetchZip() {
-                if (delivery.country === 'Denmark') {
-                    const response = await fetch(`https://api.dataforsyningen.dk/postnumre/${delivery.zip}`);
-                    const data = await response.json();
-                    setDelivery({...delivery, city: data.navn});
+            
+            const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>, type: string) => 
+            {
+                const zip = e.target.value;
+                if (type === 'delivery') {
+                    setDelivery(prevState => ({...prevState, zip}));
+                } else {
+                    setBilling(prevState => ({...prevState, zip}));
                 }
-
-                if (billing.country === 'Denmark') {
-                    const response = await fetch(`https://api.dataforsyningen.dk/postnumre/${billing.zip}`);
+                if (isValidZip(zip)) {
+                    const response = await fetch(
+                        `https://api.zippopotam.us/${delivery.country}/${zip}`
+                    );
                     const data = await response.json();
-                    setBilling({...billing, city: data.navn});
+                    if (data.places && data.places.length > 0) {
+                        if (type === 'delivery') {
+                            setDelivery(prevState => ({
+                                ...prevState,
+                                city: data.places[0]['place name'],
+                            }));
+                        } else {
+                            setBilling(prevState => ({
+                                ...prevState,
+                                city: data.places[0]['place name'],
+                            }));
+                        }
+                    }
+                }
+            }
+
+         
+            const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+                const phone = e.target.value;
+
+                if (type === 'delivery') {
+                    setDelivery(prevState => ({...prevState, phone}));
+                } else {
+                    setBilling(prevState => ({...prevState, phone}));
+                }
+            }
+            const handleVatChange = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+                const vat = e.target.value;
+
+                if (type === 'delivery') {
+                    setDelivery(prevState => ({...prevState, vat}));
+                } else {
+                    setBilling(prevState => ({...prevState, vat}));
                 }
             }
             
-          const handleZipChange = async (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-                    const zip = e.target.value;
-                    if (type === 'delivery') {
-                        setDelivery({...delivery, zip});
-                    } else {
-                        setBilling({...billing, zip});
-                    }
-              await fetchZip();
-                }
-
-            function validatePhoneNumber(phone: string, country: string): boolean {
-                if (country === 'Denmark') {
-                    const regex = /^\d{8}$/;
-                    return regex.test(phone);
-                }
-                return true;
-            }
-
-            function validateEmail(email: string): boolean {
-                const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return regex.test(email);
-            }
-
-
-            function validateVAT(vat: string, country: string): boolean {
-                if (country === 'Denmark') {
-                    const regex = /^\d{8}$/;
-                    return regex.test(vat);
-                }
-                return true;
-            }
-
             const handlePayment = (e: React.FormEvent) => {
                 e.preventDefault();
                 if (!delivery.name) {
@@ -134,10 +116,7 @@
                     setError('Zip is required');
                     return;
                 }
-                if (!delivery.city) {
-                    setError('City is required');
-                    return;
-                }
+            
                 if (!delivery.address1) {
                     setError('Address1 is required');
                     return;
@@ -150,17 +129,17 @@
                     setError('Email is required');
                     return;
                 }
-                
+
                 if (!validatePhoneNumber(delivery.phone, delivery.country)) {
-                    setError('Invalid phone number');
+                    setError('Invalid delivery phone number');
                     return;
                 }
                 if (!validateEmail(delivery.email)) {
-                    setError('Invalid email');
+                    setError('Invalid delivery email');
                     return;
                 }
-                if (delivery.country === 'Denmark' && !validateVAT(delivery.vat, delivery.country)) {
-                    setError('Invalid VAT');
+                if  (delivery.country === 'Denmark' && !validateVAT(delivery.vat, delivery.country)) {
+                    setError('Invalid delivery VAT');
                     return;
                 }
                 if (isBillingDifferent) {
@@ -170,10 +149,6 @@
                     }
                     if (!billing.zip) {
                         setError('Zip is required');
-                        return;
-                    }
-                    if (!billing.city) {
-                        setError('City is required');
                         return;
                     }
                     if (!billing.address1) {
@@ -188,16 +163,17 @@
                         setError('Email is required');
                         return;
                     }
-                    if (!validatePhoneNumber(billing.phone, billing.country)) {
-                        setError('Invalid phone number');
+
+                    if (isBillingDifferent && !validatePhoneNumber(billing.phone, billing.country)) {
+                        setError('Invalid billing phone number');
                         return;
-                    }
+                    }   
                     if (!validateEmail(billing.email)) {
-                        setError('Invalid email');
+                        setError('Invalid billing email');
                         return;
                     }
                     if (billing.country === 'Denmark' && !validateVAT(billing.vat, billing.country)) {
-                        setError('Invalid VAT');
+                        setError('Invalid billing VAT');
                         return;
                     }
                 }
@@ -251,7 +227,6 @@
                             <input
                                 type="text"
                                 value={delivery.city}
-                                disabled
                                 placeholder="City"
                                 className="form-input-two"
                             />
@@ -280,26 +255,25 @@
                                     setDelivery({...delivery, address2: e.target.value})}
                             />
                         </div>
-                       
+
                         <div>
                             <input
-                                id="fullPhone"
-                                name="fullPhone"
-                                value={fullPhone}
+                                id="countryCode"
+                                name="countryCode"
+                                value={countryCode}
                                 readOnly
                                 className="form-input-code"
                             />
-                            
-                                <input
-                                    id="phone"
-                                    name="phone"
-                                    value={delivery.phone}
-                                    className="form-input-phone"
-                                    placeholder="Phone"
-                                    onChange={(e) =>
-                                        setDelivery({...delivery, phone: e.target.value})}
-                                />
-                           
+
+                            <input
+                                id="phone"
+                                name="phone"
+                                value={delivery.phone}
+                                className="form-input-phone"
+                                placeholder="Phone"
+                                onChange={(e) => handlePhoneChange(e, 'delivery')}
+                            />
+
                         </div>
                         <div>
                             <input
@@ -322,15 +296,14 @@
                                 onChange={(e) =>
                                     setDelivery({...delivery, company: e.target.value})}
                             />
-                       
+
                             <input
                                 id="vat"
                                 name="vat"
                                 value={delivery.vat}
                                 className="form-input-two"
                                 placeholder="VAT"
-                                onChange={(e) =>
-                                    setDelivery({...delivery, vat: e.target.value})}
+                                onChange={(e) => handleVatChange(e, 'delivery')}
                             />
                         </div>
                         <div>
@@ -436,9 +409,9 @@
 
                                 <div>
                                     <input
-                                        id="fullPhone"
-                                        name="fullPhone"
-                                        value={fullPhone}
+                                        id="countryCode"
+                                        name="countryCode"
+                                        value={countryCode}
                                         readOnly
                                         className="form-input-code"
                                         placeholder="Phone"
@@ -449,10 +422,9 @@
                                         value={billing.phone}
                                         className="form-input-phone"
                                         placeholder="Phone"
-                                        onChange={(e) => 
-                                            setBilling({...billing, phone: e.target.value})}
+                                        onChange={(e) => handlePhoneChange(e, 'billing')}
                                     />
-                                   
+
 
                                 </div>
                                 <div>
@@ -484,19 +456,18 @@
                                         value={billing.vat}
                                         className="form-input-two"
                                         placeholder="VAT"
-                                        onChange={(e) =>
-                                            setBilling({...billing, vat: e.target.value})}
+                                        onChange={(e) => handleVatChange(e, 'billing')}
                                     />
                                     {error && error.includes('vat') && (
-                                        <p style={{ color: 'red' }}>{error}</p>
+                                        <p style={{color: 'red'}}>{error}</p>
                                     )}
-                                 
+
                                 </div>
-                              
+
                             </div>
                         )}
                     </form>
-                    <div  className="payment-button">
+                    <div className="payment-button">
                         {error && (
                             <div>
                                 <p style={{ color: 'red' }}>{error}</p>
