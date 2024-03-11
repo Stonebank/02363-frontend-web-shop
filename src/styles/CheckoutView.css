@@ -149,32 +149,26 @@ input[type="checkbox"] {
   width: 60%;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f8f9fa;
   border: 1px solid #0e0d0d;
   border-radius: 5px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  
+  background-color: #f8f9fa;
 }
 
 .form-address-card-header {
   font-size: 0.8rem;
   font-weight: bold;
-  margin-bottom: 0px;
-  
+  letter-spacing: -0.025em;
+  background-color: #f8f9fa;
 }
 
 .form-card {
   width: 100%;
   margin: 0 auto;
   padding: 20px;
-  background-color: transparent;
-  border: 1px solid #0e0d0d;
   border-radius: 5px;
-  margin-top: 20px;
-  margin-bottom: 20px;
   border: none;
-  margin-bottom: -20px;
+  background-color: #f8f9fa;
+
 }
 @media (max-width: 600px) {
   .form-card {
@@ -183,26 +177,50 @@ input[type="checkbox"] {
   }
 }
 
-.form-card input {
+.form-input {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #0e0d0d;
   border-radius: 5px;
+  background-color: #f8f9fa;
+}
+.form-input-code {
+  width: 8%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #0e0d0d;
+background-color: #f8f9fa;
+}
+.form-input-phone {
+  width: 92%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #0e0d0d;
+  background-color: #f8f9fa;
+  
 }
 
+.form-input-two {
+  width:  50% ;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #0e0d0d;
+  background-color: #f8f9fa;
+}
 .address-country{
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #070707;
   border-radius: 5px;
   border:none;
-  background-color: transparent;
+
 }
 .payment-button {
-  background-color: transparent;
   display: flex;
   justify-content: right;
-  
+  background-color: #f8f9fa;
 }
